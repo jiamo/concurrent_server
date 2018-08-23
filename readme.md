@@ -2,6 +2,8 @@
 # why
 1. for the study concurrent server
 2. translate to python code  https://eli.thegreenplace.net/2017/concurrent-servers-part-1-introduction/
+3. greenlet_concurrent_server is the interesting one you may want to have a look.
+
 
 # test
 1. python uv_select_server.py

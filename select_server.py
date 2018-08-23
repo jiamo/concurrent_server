@@ -26,6 +26,7 @@ SENDBUF_SIZE = 1024
 MAX_SOCKS = 1000
 global_states = [PeerState() for i in range(MAX_SOCKS)]
 
+
 class SockStatus:
     def __init__(self, want_read, want_write):
         self.want_read = want_read
@@ -91,7 +92,7 @@ def on_peer_ready_recv(sock):
     if not data:
         return sock_status_NORW
     # failed has except for simple reason don't handle it
-    read_to_send = False
+    ready_to_send = False
     for i, ch in enumerate(data):
         if peer_state.process_state == ProcessingState.INITIAL_ACK:
             assert "can't reach here"
@@ -108,11 +109,11 @@ def on_peer_ready_recv(sock):
                 peer_state.sendbuf.insert(peer_state.sendbuf_end,
                                           chr(data[i] + 1))
                 peer_state.sendbuf_end += 1
-                read_to_send = True
+                ready_to_send = True
 
     return SockStatus(
-        want_read=(not read_to_send),
-        want_write=read_to_send,
+        want_read=(not ready_to_send),
+        want_write=ready_to_send,
     )
 
 
