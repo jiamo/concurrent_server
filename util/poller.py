@@ -236,6 +236,8 @@ class Kqueue(BasePoller):
         self._sock_map[sock.fileno()] = sock
 
     def unregister(self, sock):
+        if sock.fileno() == -1:
+            return
         del self._kev_table[sock.fileno()]
         del self._sock_map[sock.fileno()]
 
