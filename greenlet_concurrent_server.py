@@ -60,14 +60,15 @@ def epollcontext(*args, **kwargs):
 
 
 class GreenletManager():
-    def __init__(self, back_greenlet, task_fun):
         self.back_greenlet = back_greenlet
         self.work_greenlet = greenlet.greenlet(task_fun)
         self.conn = None
         self.finished = False
+        self.epoll = None
 
     def start(self, conn, fd, epoll):
         self.conn = conn
+        self.epoll = epoll
         self.work_greenlet.switch(self, conn, fd, epoll)
 
     def return_back(self):
@@ -78,6 +79,7 @@ class GreenletManager():
 
     def finish(self):
         self.finished = True
+        self.epoll.unregister(self.conn)
         self.return_back()
 
     def check_close(self):
@@ -153,18 +155,21 @@ def send(conn, data):
         except socket.error as e:
             if str(e) == "[Errno 35] Resource temporarily unavailable":
                 continue
+            if str(e) == "[WinError 10035] A non-blocking socket operation could not be completed immediately":
+                continue
             raise e
-
 
 def read(conn, n):
     while True:
         try:
             result = conn.recv(n)
             break
-        except socket.error as ex:
-            if str(ex) == "[Errno 35] Resource temporarily unavailable":
+        except socket.error as e:
+            if str(e) == "[Errno 35] Resource temporarily unavailable":
                 continue
-            raise ex
+            if str(e) == "[WinError 10035] A non-blocking socket operation could not be completed immediately":
+                continue
+            raise e
 
     return result
 

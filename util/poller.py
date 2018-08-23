@@ -108,6 +108,8 @@ class Poll(BasePoller):
         self._sock_map[sock.fileno()] = sock
 
     def unregister(self, sock):
+        if sock.fileno() == -1:
+            return
         self._poll.unregister(sock)
         del self._sock_map[sock.fileno()]
 
@@ -131,7 +133,7 @@ class Poll(BasePoller):
 
 class Epoll(Poll):
 
-    def __init__(self, def_ev_mask=None, sizehint=0):
+    def __init__(self, def_ev_mask=None, sizehint=10):
         BasePoller.__init__(self, def_ev_mask)
         self._poll = select.epoll(sizehint)
 
