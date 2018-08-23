@@ -60,6 +60,7 @@ def epollcontext(*args, **kwargs):
 
 
 class GreenletManager():
+    def __init__(self, back_greenlet, task_fun):
         self.back_greenlet = back_greenlet
         self.work_greenlet = greenlet.greenlet(task_fun)
         self.conn = None
