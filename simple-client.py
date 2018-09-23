@@ -66,6 +66,7 @@ def make_new_connection(name, host, port):
     time.sleep(0.2)
 
     rthread.join()
+    sockobj.shutdown(0)
     sockobj.close()
     logging.info('{0} disconnecting'.format(name))
 
